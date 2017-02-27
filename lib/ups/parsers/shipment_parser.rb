@@ -3,37 +3,23 @@ require 'tempfile'
 
 module UPS
   module Parsers
-    class ShipAcceptParser < ParserBase
+    class ShipmentParser < ParserBase
       attr_accessor :graphic_image,
                     :graphic_extension,
                     :html_image,
-                    :tracking_number,
-                    :pdf_417,
-                    :label_url
+                    :tracking_number
 
       def value(value)
         parse_graphic_image(value)
         parse_html_image(value)
         parse_tracking_number(value)
         parse_graphic_extension(value)
-        parse_pdf_417(value)
-        parse_label_url(value)
         super
       end
 
       def parse_graphic_image(value)
         return unless switch_active?(:GraphicImage)
         self.graphic_image = base64_to_file(value.as_s)
-      end
-
-      def parse_pdf_417(value)
-        return unless switch_active?(:PDF417)
-        self.pdf_417 = base64_to_file(value.as_s)
-      end
-
-      def parse_label_url(value)
-        return unless switch_active?(:LabelURL)
-        self.label_url = value.as_s
       end
 
       def parse_html_image(value)

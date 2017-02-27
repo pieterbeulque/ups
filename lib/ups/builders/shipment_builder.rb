@@ -2,21 +2,21 @@ require 'ox'
 
 module UPS
   module Builders
-    # The {ShipConfirmBuilder} class builds UPS XML ShipConfirm Objects.
+    # The {ShipmentBuilder} class builds UPS XML ShipmentRequest Objects.
     #
     # @author Paul Trippett
     # @since 0.1.0
     # @attr [String] name The Containing XML Element Name
     # @attr [Hash] opts The Organization and Address Parts
-    class ShipConfirmBuilder < BuilderBase
+    class ShipmentBuilder < BuilderBase
       include Ox
 
       # Initializes a new {ShipConfirmBuilder} object
       #
       def initialize
-        super 'ShipmentConfirmRequest'
+        super 'ShipmentRequest'
 
-        add_request 'ShipConfirm', 'validate'
+        add_request 'ShipmentRequest', 'validate'
       end
 
       # Adds a LabelSpecification section to the XML document being built
@@ -28,7 +28,7 @@ module UPS
           label_spec << label_print_method(format)
           label_spec << label_image_format(format)
           label_spec << label_stock_size(size)
-          # label_spec << http_user_agent if gif?(format)
+          label_spec << http_user_agent if gif?(format)
         end
       end
 
@@ -45,18 +45,17 @@ module UPS
                                           service_description)
       end
 
+      # Adds a ReturnService section to the XML document being built
+      #
+      # @param [String] service_code The Service code for the choosen Shipping
+      #   method
+      # @param [optional, String] service_description A description for the
+      #   choosen Shipping Method
+      # @return [void]
       def add_return_service(service_code, service_description = '')
         shipment_root << code_description('ReturnService',
                                           service_code,
                                           service_description)
-
-        if service_code == "9"
-          shipment_root << Element.new('ShipmentServiceOptions').tap do |service|
-            service << Element.new('LabelDelivery').tap do |label_delivery|
-              label_delivery << element_with_value('LabelLinksIndicator', "")
-            end
-          end
-        end
       end
 
       # Adds Description to XML document being built

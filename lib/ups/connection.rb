@@ -82,6 +82,17 @@ module UPS
       make_accept_request accept_builder
     end
 
+    def do_shipment(shipment_builder = nil)
+      if shipment_builder.nil? && block_given?
+        shipment_builder = Builders::ShipmentBuilder.new
+        yield shipment_builder
+      end
+
+      shipment_request = make_shipment_request shipment_builder
+
+      return shipment_request
+    end
+
     private
 
     def build_url(path)
@@ -107,6 +118,14 @@ module UPS
 
     def make_ship_request(builder, path, ship_parser)
       response = get_response_stream path, builder.to_xml
+      ship_parser.tap do |parser|
+        Ox.sax_parse(parser, response)
+      end
+    end
+
+    def make_shipment_request(builder)
+      ship_parser = Parsers::ShipmentParser.new
+      response = get_response_stream SHIPMENT_PATH, builder.to_xml
       ship_parser.tap do |parser|
         Ox.sax_parse(parser, response)
       end
