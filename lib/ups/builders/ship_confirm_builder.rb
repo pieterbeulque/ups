@@ -50,13 +50,13 @@ module UPS
                                           service_code,
                                           service_description)
 
-        if service_code == "9"
-          shipment_root << Element.new('ShipmentServiceOptions').tap do |service|
-            service << Element.new('LabelDelivery').tap do |label_delivery|
-              label_delivery << element_with_value('LabelLinksIndicator', "")
-            end
-          end
-        end
+        # if service_code == "9"
+        #   shipment_root << Element.new('ShipmentServiceOptions').tap do |service|
+        #     service << Element.new('LabelDelivery').tap do |label_delivery|
+        #       label_delivery << element_with_value('LabelLinksIndicator', "")
+        #     end
+        #   end
+        # end
       end
 
       # Adds Description to XML document being built
